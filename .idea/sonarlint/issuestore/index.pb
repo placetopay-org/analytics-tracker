@@ -32,3 +32,5 @@ B
 -vendor/fakerphp/faker/src/Faker/Generator.php,4/a/4a329a94f6e821476cf5dd84a538fa14f3a4182d
 [
 +tests/Unit/Trackers/MixpanelTrackerTest.php,d/9/d9a2e289a1d912083a53154be9705a0e8dc2a2dd
+@
+phpunit.xml.dist,f/3/f3d8f03a0c4bab44351407daddbda1f23a33919c

@@ -63,10 +63,10 @@ class MixpanelTrackerTest extends TestCase
     /**
      * @test
      */
-    public function it_can_not_track_if_has_not_been_identified(): void
+    public function it_can_track_if_user_has_not_been_identified(): void
     {
         $mixpanelMock = $this->createMock(Mixpanel::class);
-        $mixpanelMock->expects($this->never())
+        $mixpanelMock->expects($this->once())
             ->method('track');
 
         Log::shouldReceive('warning')->once();

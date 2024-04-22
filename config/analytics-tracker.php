@@ -3,6 +3,6 @@
 return [
     'mixpanel' => [
         'enabled' => env('MIXPANEL_ENABLED', false),
-        'token' => env('MIXPANEL_PROJECT_TOKEN', ''),
+        'project_token' => env('MIXPANEL_PROJECT_TOKEN', ''),
     ],
 ];

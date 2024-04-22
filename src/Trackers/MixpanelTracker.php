@@ -30,8 +30,7 @@ class MixpanelTracker implements Tracker
     public function track(TrackerLabelsEnum $label, array $payload = []): void
     {
         if (!$this->identified) {
-            logger()->warning('You must identify the user in order to track an event');
-            return;
+            logger()->warning('Event tracked but user has not been identified');
         }
 
         $this->mixpanel?->track($label->value, array_merge($this->defaultPayload, $payload, ['backend' => true]));
