@@ -24,10 +24,9 @@ Add the following variables to your .env:
 
 ```php
 use Placetopay\AnalyticsTracker\Contracts\Tracker;
-use Placetopay\AnalyticsTracker\Enums\TrackerLabelsEnum;
 
 app(Tracker::class)
 ->identify("user@company.com") // Associate a user to the tracked events
 ->setDefaultPayload(['key' => 'value']) // Set the default data to be sent on every event track
-->track(TrackerLabelsEnum::TRANSACTION_MADE, ['key' => 'value']); // Tracks an event
+->track('Label', ['key' => 'value']); // Tracks an event
 ```
