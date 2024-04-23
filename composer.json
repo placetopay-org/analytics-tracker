@@ -12,12 +12,6 @@
             "Placetopay\\AnalyticsTracker\\Tests\\": "tests"
         }
     },
-    "authors": [
-        {
-            "name": "Kevin Vargas",
-            "email": "kevin.vargas@evertecinc.com"
-        }
-    ],
     "require": {
         "php": "^8.2",
         "mixpanel/mixpanel-php": "^2.11"
