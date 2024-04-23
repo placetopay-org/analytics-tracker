@@ -12,4 +12,4 @@ composer.lock
 .DS_Store
 
 # ide files
-.idea
+.idea/
