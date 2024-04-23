@@ -2,11 +2,9 @@
 
 namespace Placetopay\AnalyticsTracker\Contracts;
 
-use Placetopay\AnalyticsTracker\Enums\TrackerLabelsEnum;
-
 interface Tracker
 {
-    public function track(TrackerLabelsEnum $label, array $payload = []);
+    public function track(string $label, array $payload = []);
 
     public function setDefaultPayload(array $payload): self;
 

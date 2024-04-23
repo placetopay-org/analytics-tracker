@@ -4,7 +4,6 @@ namespace Placetopay\AnalyticsTracker\Trackers;
 
 use Mixpanel;
 use Placetopay\AnalyticsTracker\Contracts\Tracker;
-use Placetopay\AnalyticsTracker\Enums\TrackerLabelsEnum;
 
 class MixpanelTracker implements Tracker
 {
@@ -27,13 +26,13 @@ class MixpanelTracker implements Tracker
         $this->mixpanel = Mixpanel::getInstance(config('analytics-tracker.mixpanel.project_token'));
     }
 
-    public function track(TrackerLabelsEnum $label, array $payload = []): void
+    public function track(string $label, array $payload = []): void
     {
         if (!$this->identified) {
             logger()->warning('Event tracked but user has not been identified');
         }
 
-        $this->mixpanel?->track($label->value, array_merge($this->defaultPayload, $payload, ['backend' => true]));
+        $this->mixpanel?->track($label, array_merge($this->defaultPayload, $payload, ['backend' => true]));
     }
 
     public function setDefaultPayload(array $payload): self

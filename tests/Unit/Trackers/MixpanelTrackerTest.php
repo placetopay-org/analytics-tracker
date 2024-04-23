@@ -6,7 +6,6 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Mixpanel;
-use Placetopay\AnalyticsTracker\Enums\TrackerLabelsEnum;
 use Placetopay\AnalyticsTracker\Tests\TestCase;
 use Placetopay\AnalyticsTracker\Trackers\MixpanelTracker;
 
@@ -29,11 +28,13 @@ class MixpanelTrackerTest extends TestCase
         $key = $this->faker->word();
         $value = $this->faker->word();
 
+        $eventLabel = $this->faker->word();
+
         $mixpanelMock = $this->createMock(Mixpanel::class);
         $mixpanelMock->expects($this->once())
             ->method('track')
             ->with(
-                $this->equalTo(TrackerLabelsEnum::REQUESTED_3DS->value),
+                $this->equalTo($eventLabel),
                 $this->equalTo(['backend' => true, $key => $value])
             );
 
@@ -41,7 +42,7 @@ class MixpanelTrackerTest extends TestCase
         $mixpanelTracker->mixpanel = $mixpanelMock;
         $mixpanelTracker->setDefaultPayload([$key => $value]);
         $mixpanelTracker->identify($this->faker->email());
-        $mixpanelTracker->track(TrackerLabelsEnum::REQUESTED_3DS);
+        $mixpanelTracker->track($eventLabel);
     }
 
     /**
@@ -65,23 +66,18 @@ class MixpanelTrackerTest extends TestCase
      */
     public function it_can_track_if_user_has_not_been_identified(): void
     {
+        $label = $this->faker->word();
+
         $mixpanelMock = $this->createMock(Mixpanel::class);
         $mixpanelMock->expects($this->once())
-            ->method('track');
+            ->method('track')
+        ->with($label);
 
         Log::shouldReceive('warning')->once();
 
         $mixpanelTracker = new MixpanelTracker();
         $mixpanelTracker->mixpanel = $mixpanelMock;
-        $mixpanelTracker->track(TrackerLabelsEnum::REQUESTED_3DS);
-    }
-
-    public static function configProvider(): array
-    {
-        return [
-            ['analytics-tracker.mixpanel.project_token', null],
-            ['analytics-tracker.mixpanel.enabled', false],
-        ];
+        $mixpanelTracker->track($label);
     }
 
     /**
@@ -94,5 +90,13 @@ class MixpanelTrackerTest extends TestCase
         Log::shouldReceive('warning')->once();
         $mixpanelTracker = new MixpanelTracker();
         $this->assertNull($mixpanelTracker->mixpanel);
+    }
+
+    public static function configProvider(): array
+    {
+        return [
+            ['analytics-tracker.mixpanel.project_token', null],
+            ['analytics-tracker.mixpanel.enabled', false],
+        ];
     }
 }
