@@ -48,7 +48,7 @@ class MixpanelTracker implements Tracker
 
     public function hasToken(): bool
     {
-        return (bool) config('analytics-tracker.mixpanel.project_token');
+        return (bool)config('analytics-tracker.mixpanel.project_token');
     }
 
     public function identify(string $identifier): self
