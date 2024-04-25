@@ -15,6 +15,10 @@ This package can be installed via composer:
 composer require "placetopay/analytics-tracker"
 ```
 
+## Supported analytics trackers
+
+- [Mixpanel](https://mixpanel.com/)
+
 ## Usage
 
 Add the following variables to your .env:
@@ -26,7 +30,7 @@ Add the following variables to your .env:
 use Placetopay\AnalyticsTracker\Contracts\Tracker;
 
 app(Tracker::class)
-->identify("user@company.com") // Associate a user to the tracked events
-->setDefaultPayload(['key' => 'value']) // Set the default data to be sent on every event track
+->setIdentifier("user@company.com") // (optional) Associate a user to the tracked events
+->setDefaultPayload(['key' => 'value']) // Set the default data to be sent on every track call
 ->track('Label', ['key' => 'value']); // Tracks an event
 ```

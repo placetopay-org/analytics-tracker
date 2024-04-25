@@ -7,7 +7,7 @@ use Placetopay\AnalyticsTracker\Contracts\AnalyticsTracker;
 
 class MixpanelTracker implements AnalyticsTracker
 {
-    public ?Mixpanel $mixpanel = null;
+    private ?Mixpanel $mixpanel = null;
     private array $defaultPayload = [];
 
     public function __construct()
@@ -21,7 +21,7 @@ class MixpanelTracker implements AnalyticsTracker
             return;
         }
 
-        $this->mixpanel = Mixpanel::getInstance($token);
+        $this->mixpanel = app(Mixpanel::class, ['token' => $token]);
     }
 
     public function track(string $label, array $payload = []): void
