@@ -3,36 +3,30 @@
 namespace Placetopay\AnalyticsTracker\Trackers;
 
 use Mixpanel;
-use Placetopay\AnalyticsTracker\Contracts\Tracker;
+use Placetopay\AnalyticsTracker\Contracts\AnalyticsTracker;
 
-class MixpanelTracker implements Tracker
+class MixpanelTracker implements AnalyticsTracker
 {
     public ?Mixpanel $mixpanel = null;
-    private bool $identified = false;
     private array $defaultPayload = [];
 
     public function __construct()
     {
         if (!$this->enabled()) {
-            logger()->warning('Calling mixpanel but it is disabled');
             return;
         }
 
-        if (!$this->hasToken()) {
+        if (!$token = config('analytics-tracker.mixpanel.project_token')) {
             logger()->warning('Calling mixpanel but there is not token');
             return;
         }
 
-        $this->mixpanel = Mixpanel::getInstance(config('analytics-tracker.mixpanel.project_token'));
+        $this->mixpanel = Mixpanel::getInstance($token);
     }
 
     public function track(string $label, array $payload = []): void
     {
-        if (!$this->identified) {
-            logger()->warning('Event tracked but user has not been identified');
-        }
-
-        $this->mixpanel?->track($label, array_merge($this->defaultPayload, $payload, ['backend' => true]));
+        $this->mixpanel?->track($label, array_merge($this->defaultPayload, $payload));
     }
 
     public function setDefaultPayload(array $payload): self
@@ -46,17 +40,9 @@ class MixpanelTracker implements Tracker
         return config('analytics-tracker.mixpanel.enabled');
     }
 
-    public function hasToken(): bool
+    public function setIdentifier(string $identifier): self
     {
-        return (bool)config('analytics-tracker.mixpanel.project_token');
-    }
-
-    public function identify(string $identifier): self
-    {
-        if (!$this->identified) {
-            $this->mixpanel?->identify(strtolower(trim($identifier)));
-            $this->identified = true;
-        }
+        $this->mixpanel?->identify(strtolower(trim($identifier)));
 
         return $this;
     }

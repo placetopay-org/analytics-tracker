@@ -27,7 +27,6 @@ class MixpanelTrackerTest extends TestCase
     {
         $key = $this->faker->word();
         $value = $this->faker->word();
-
         $eventLabel = $this->faker->word();
 
         $mixpanelMock = $this->createMock(Mixpanel::class);
@@ -35,14 +34,23 @@ class MixpanelTrackerTest extends TestCase
             ->method('track')
             ->with(
                 $this->equalTo($eventLabel),
-                $this->equalTo(['backend' => true, $key => $value])
+                $this->equalTo([
+                    'backend' => true,
+                    $key => $value,
+                    'customProperty' => 'johnDue@user.com'
+                ])
             );
+        $this->app->bind(Mixpanel::class, fn() => $mixpanelMock);
 
         $mixpanelTracker = new MixpanelTracker();
-        $mixpanelTracker->mixpanel = $mixpanelMock;
-        $mixpanelTracker->setDefaultPayload([$key => $value]);
-        $mixpanelTracker->identify($this->faker->email());
-        $mixpanelTracker->track($eventLabel);
+        //$mixpanelTracker->mixpanel = $mixpanelMock;
+        $mixpanelTracker
+            ->setDefaultPayload([
+                'backend' => true,
+                'customProperty' => 'johnDue@user.com',
+                $key => $value,
+            ])
+            ->track($eventLabel);
     }
 
     /**
@@ -58,7 +66,7 @@ class MixpanelTrackerTest extends TestCase
 
         $mixpanelTracker = new MixpanelTracker();
         $mixpanelTracker->mixpanel = $mixpanelMock;
-        $mixpanelTracker->identify($fakeEmail);
+        $mixpanelTracker->setIdentifier($fakeEmail);
     }
 
     /**
@@ -71,7 +79,7 @@ class MixpanelTrackerTest extends TestCase
         $mixpanelMock = $this->createMock(Mixpanel::class);
         $mixpanelMock->expects($this->once())
             ->method('track')
-        ->with($label);
+            ->with($label);
 
         Log::shouldReceive('warning')->once();
 
