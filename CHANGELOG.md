@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Facade name from `AnalyticsTracker` to `Analytics`
+
+### Fixed
+
+- Facade Accessor
+
 ## [1.0.0] - 2024-04-26
 
 ### Added
