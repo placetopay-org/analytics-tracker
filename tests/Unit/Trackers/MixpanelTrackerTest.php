@@ -25,24 +25,27 @@ class MixpanelTrackerTest extends TestCase
      */
     public function it_can_track_an_event(): void
     {
-        $key = $this->faker->word();
-        $value = $this->faker->word();
-
         $eventLabel = $this->faker->word();
+
+        $testPayload = [
+            $this->faker->word(),
+            'backend' => true,
+            'customProperty' => 'johnDue@user.com',
+        ];
 
         $mixpanelMock = $this->createMock(Mixpanel::class);
         $mixpanelMock->expects($this->once())
             ->method('track')
             ->with(
                 $this->equalTo($eventLabel),
-                $this->equalTo(['backend' => true, $key => $value])
+                $this->equalTo($testPayload)
             );
+        $this->app->offsetSet(Mixpanel::class, $mixpanelMock);
 
         $mixpanelTracker = new MixpanelTracker();
-        $mixpanelTracker->mixpanel = $mixpanelMock;
-        $mixpanelTracker->setDefaultPayload([$key => $value]);
-        $mixpanelTracker->identify($this->faker->email());
-        $mixpanelTracker->track($eventLabel);
+        $mixpanelTracker
+            ->setDefaultPayload($testPayload)
+            ->track($eventLabel);
     }
 
     /**
@@ -51,14 +54,15 @@ class MixpanelTrackerTest extends TestCase
     public function it_can_identify_the_user(): void
     {
         $fakeEmail = $this->faker->email();
+
         $mixpanelMock = $this->createMock(Mixpanel::class);
         $mixpanelMock->expects($this->once())
             ->method('identify')
             ->with($fakeEmail);
+        $this->app->offsetSet(Mixpanel::class, $mixpanelMock);
 
         $mixpanelTracker = new MixpanelTracker();
-        $mixpanelTracker->mixpanel = $mixpanelMock;
-        $mixpanelTracker->identify($fakeEmail);
+        $mixpanelTracker->setIdentifier($fakeEmail);
     }
 
     /**
@@ -71,32 +75,50 @@ class MixpanelTrackerTest extends TestCase
         $mixpanelMock = $this->createMock(Mixpanel::class);
         $mixpanelMock->expects($this->once())
             ->method('track')
-        ->with($label);
-
-        Log::shouldReceive('warning')->once();
+            ->with($label);
+        $this->app->offsetSet(Mixpanel::class, $mixpanelMock);
 
         $mixpanelTracker = new MixpanelTracker();
-        $mixpanelTracker->mixpanel = $mixpanelMock;
         $mixpanelTracker->track($label);
     }
 
     /**
      * @test
-     * @dataProvider configProvider
      */
-    public function it_does_not_initialize_mixpanel_when_disabled_or_has_no_token($setting, $value): void
+    public function it_does_not_track_when_disabled(): void
     {
-        config()->set($setting, $value);
-        Log::shouldReceive('warning')->once();
+        config()->set('analytics-tracker.mixpanel.enabled', false);
+
+        $label = $this->faker->word();
+
+        $mixpanelMock = $this->createMock(Mixpanel::class);
+        $mixpanelMock->expects($this->never())
+            ->method('track')
+            ->with($label);
+        $this->app->offsetSet(Mixpanel::class, $mixpanelMock);
+
         $mixpanelTracker = new MixpanelTracker();
-        $this->assertNull($mixpanelTracker->mixpanel);
+        $mixpanelTracker->track($label);
     }
 
-    public static function configProvider(): array
+    /**
+     * @test
+     */
+    public function it_does_not_track_when_has_no_token(): void
     {
-        return [
-            ['analytics-tracker.mixpanel.project_token', null],
-            ['analytics-tracker.mixpanel.enabled', false],
-        ];
+        config()->set('analytics-tracker.mixpanel.project_token', '');
+
+        $label = $this->faker->word();
+
+        $mixpanelMock = $this->createMock(Mixpanel::class);
+        $mixpanelMock->expects($this->never())
+            ->method('track')
+            ->with($label);
+        $this->app->offsetSet(Mixpanel::class, $mixpanelMock);
+
+        Log::shouldReceive('warning')->with('Calling mixpanel but there is not token')->once();
+
+        $mixpanelTracker = new MixpanelTracker();
+        $mixpanelTracker->track($label);
     }
 }
