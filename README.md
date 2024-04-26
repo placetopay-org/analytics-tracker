@@ -27,9 +27,9 @@ Add the following variables to your .env:
 - MIXPANEL_PROJECT_TOKEN={{token}}
 
 ```php
-use Placetopay\AnalyticsTracker\Facades\AnalyticsTracker;
+use Placetopay\AnalyticsTracker\Facades\Analytics;
 
-AnalyticsTracker::setIdentifier("user@company.com") // (optional) Associate a user to the tracked events
+Analytics::setIdentifier("user@company.com") // (optional) Associate a user to the tracked events
 ->setDefaultPayload(['key' => 'value']) // Set the default data to be sent on every track call
 ->track('Label', ['key' => 'value']); // Tracks an event
 ```

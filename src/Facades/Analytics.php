@@ -3,13 +3,14 @@
 namespace Placetopay\AnalyticsTracker\Facades;
 
 use Illuminate\Support\Facades\Facade;
+use Placetopay\AnalyticsTracker\Contracts\AnalyticsTracker;
 
 /**
- * @mixin \Placetopay\AnalyticsTracker\Contracts\AnalyticsTracker
+ * @mixin AnalyticsTracker
  */
-class AnalyticsTracker extends Facade
+class Analytics extends Facade
 {
-    public const ACCESSOR = 'AnalyticsTracker';
+    public const ACCESSOR = 'analytics';
 
     protected static function getFacadeAccessor(): string
     {
