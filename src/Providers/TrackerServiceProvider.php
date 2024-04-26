@@ -16,6 +16,6 @@ class TrackerServiceProvider extends ServiceProvider implements DeferrableProvid
 
     public function provides(): array
     {
-        return [AnalyticsTracker::ACCESSOR::ACCESOR];
+        return [AnalyticsTracker::ACCESSOR];
     }
 }
