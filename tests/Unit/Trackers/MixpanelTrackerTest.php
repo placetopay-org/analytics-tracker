@@ -104,6 +104,69 @@ class MixpanelTrackerTest extends TestCase
     /**
      * @test
      */
+    public function it_decides_to_track_events_with_function(): void
+    {
+        $mixpanelMock = $this->createMock(Mixpanel::class);
+        $mixpanelMock->expects($this->once())
+            ->method('track')
+            ->with('EventTracked', ['prop1' => 'value1']);
+
+        $this->app->offsetSet(Mixpanel::class, $mixpanelMock);
+
+        $shouldTrackEvent = function (string $label, array $payload) {
+            $this->assertArrayHasKey('prop1', $payload);
+
+            return $label === 'EventTracked';
+        };
+
+        $mixpanelTracker = (new MixpanelTracker())->shouldTrackEvents($shouldTrackEvent);
+        $mixpanelTracker->track('EventDropped', ['prop1' => 'value1']);
+        $mixpanelTracker->track('EventTracked', ['prop1' => 'value1']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_decides_to_track_events_with_an_invokable(): void
+    {
+        $mixpanelMock = $this->createMock(Mixpanel::class);
+        $mixpanelMock->expects($this->once())
+            ->method('track')
+            ->with('EventTracked', ['prop1' => 'value1']);
+
+        $this->app->offsetSet(Mixpanel::class, $mixpanelMock);
+
+        $shouldTrackEvent = new class {
+            public function __invoke(string $label, array $payload)
+            {
+                return $label === 'EventTracked';
+            }
+        };
+
+        $mixpanelTracker = (new MixpanelTracker())->shouldTrackEvents($shouldTrackEvent);
+        $mixpanelTracker->track('EventDropped', ['prop1' => 'value1']);
+        $mixpanelTracker->track('EventTracked', ['prop1' => 'value1']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_track_when_should_not_track_events(): void
+    {
+        $mixpanelMock = $this->createMock(Mixpanel::class);
+        $mixpanelMock->expects($this->never())
+            ->method('track')
+            ->with('EventDropped', ['prop1' => 'value1']);
+
+        $this->app->offsetSet(Mixpanel::class, $mixpanelMock);
+
+        $mixpanelTracker = (new MixpanelTracker())->shouldTrackEvents(fn () => false);
+        $mixpanelTracker->track('EventDropped', ['prop1' => 'value1']);
+    }
+
+    /**
+     * @test
+     */
     public function it_does_not_track_when_has_no_token(): void
     {
         config()->set('analytics-tracker.mixpanel.project_token', '');
