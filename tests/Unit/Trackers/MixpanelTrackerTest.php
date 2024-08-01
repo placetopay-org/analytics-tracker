@@ -104,6 +104,44 @@ class MixpanelTrackerTest extends TestCase
     /**
      * @test
      */
+    public function it_does_not_track_when_should_not_track_events(): void
+    {
+        $label = $this->faker->word();
+
+        $mixpanelMock = $this->createMock(Mixpanel::class);
+        $mixpanelMock->expects($this->never())
+            ->method('track')
+            ->with($label);
+        $this->app->offsetSet(Mixpanel::class, $mixpanelMock);
+
+        $mixpanelTracker = new MixpanelTracker();
+        $mixpanelTracker
+            ->shouldTrackEvents(false)
+            ->track($label);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_tracks_when_should_track_events(): void
+    {
+        $label = $this->faker->word();
+
+        $mixpanelMock = $this->createMock(Mixpanel::class);
+        $mixpanelMock->expects($this->once())
+            ->method('track')
+            ->with($label);
+        $this->app->offsetSet(Mixpanel::class, $mixpanelMock);
+
+        $mixpanelTracker = new MixpanelTracker();
+        $mixpanelTracker
+            ->shouldTrackEvents(true)
+            ->track($label);
+    }
+
+    /**
+     * @test
+     */
     public function it_does_not_track_when_has_no_token(): void
     {
         config()->set('analytics-tracker.mixpanel.project_token', '');

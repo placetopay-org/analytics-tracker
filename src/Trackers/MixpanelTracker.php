@@ -9,6 +9,7 @@ class MixpanelTracker implements AnalyticsTracker
 {
     private ?Mixpanel $mixpanel = null;
     private array $defaultPayload = [];
+    private bool $shouldTrackEvents = true;
 
     public function __construct()
     {
@@ -26,12 +27,20 @@ class MixpanelTracker implements AnalyticsTracker
 
     public function track(string $label, array $payload = []): void
     {
-        $this->mixpanel?->track($label, array_merge($this->defaultPayload, $payload));
+        if ($this->shouldTrackEvents) {
+            $this->mixpanel?->track($label, array_merge($this->defaultPayload, $payload));
+        }
     }
 
     public function setDefaultPayload(array $payload): self
     {
         $this->defaultPayload = $payload;
+        return $this;
+    }
+
+    public function shouldTrackEvents(bool $shouldTrackEvents): self
+    {
+        $this->shouldTrackEvents = $shouldTrackEvents;
         return $this;
     }
 
