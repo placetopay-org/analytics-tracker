@@ -2,6 +2,7 @@
 
 namespace Placetopay\AnalyticsTracker\Trackers;
 
+use Closure;
 use Mixpanel;
 use Placetopay\AnalyticsTracker\Contracts\AnalyticsTracker;
 
@@ -9,7 +10,7 @@ class MixpanelTracker implements AnalyticsTracker
 {
     private ?Mixpanel $mixpanel = null;
     private array $defaultPayload = [];
-    private bool $shouldTrackEvents = true;
+    private ?Closure $shouldTrackEvents = null;
 
     public function __construct()
     {
@@ -27,9 +28,16 @@ class MixpanelTracker implements AnalyticsTracker
 
     public function track(string $label, array $payload = []): void
     {
-        if ($this->shouldTrackEvents) {
+        if ($this->shouldTrack($label, $payload)) {
             $this->mixpanel?->track($label, array_merge($this->defaultPayload, $payload));
         }
+    }
+
+    private function shouldTrack(string $label, array $payload = [])
+    {
+        return is_callable($this->shouldTrackEvents)
+            ? ($this->shouldTrackEvents)($label, $payload)
+            : true;
     }
 
     public function setDefaultPayload(array $payload): self
@@ -38,9 +46,9 @@ class MixpanelTracker implements AnalyticsTracker
         return $this;
     }
 
-    public function shouldTrackEvents(bool $shouldTrackEvents): self
+    public function shouldTrackEvents(callable $shouldTrackEvents): self
     {
-        $this->shouldTrackEvents = $shouldTrackEvents;
+        $this->shouldTrackEvents = Closure::fromCallable($shouldTrackEvents);
         return $this;
     }
 
