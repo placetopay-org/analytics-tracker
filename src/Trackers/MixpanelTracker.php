@@ -48,7 +48,8 @@ class MixpanelTracker implements AnalyticsTracker
 
     public function shouldTrackEvents(callable $shouldTrackEvents): self
     {
-        $this->shouldTrackEvents = Closure::fromCallable($shouldTrackEvents);
+        $this->shouldTrackEvents = $shouldTrackEvents(...);
+
         return $this;
     }
 

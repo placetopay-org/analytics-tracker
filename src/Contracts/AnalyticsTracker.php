@@ -8,5 +8,7 @@ interface AnalyticsTracker
 
     public function setDefaultPayload(array $payload): self;
 
+    public function shouldTrackEvents(callable $shouldTrackEvents): self;
+
     public function setIdentifier(string $identifier): self;
 }
