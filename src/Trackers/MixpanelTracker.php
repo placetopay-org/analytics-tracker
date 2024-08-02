@@ -28,8 +28,12 @@ class MixpanelTracker implements AnalyticsTracker
 
     public function track(string $label, array $payload = []): void
     {
+        if ($this->mixpanel === null) {
+            return;
+        }
+
         if ($this->shouldTrack($label, $payload)) {
-            $this->mixpanel?->track($label, array_merge($this->defaultPayload, $payload));
+            $this->mixpanel->track($label, array_merge($this->defaultPayload, $payload));
         }
     }
 
