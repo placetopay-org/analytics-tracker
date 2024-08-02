@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add `shouldTrackEvents` property
+- Add `shouldTrackEvents` method to `AnalyticsTracker` contract.
 
 ## [1.0.1] - 2024-04-26
 
