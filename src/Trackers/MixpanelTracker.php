@@ -32,8 +32,10 @@ class MixpanelTracker implements AnalyticsTracker
             return;
         }
 
+        $payload = array_merge($this->defaultPayload, $payload);
+
         if ($this->shouldTrack($label, $payload)) {
-            $this->mixpanel->track($label, array_merge($this->defaultPayload, $payload));
+            $this->mixpanel->track($label, $payload);
         }
     }
 
